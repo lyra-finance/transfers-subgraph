@@ -1,28 +1,15 @@
-import { BigDecimal, ethereum } from "@graphprotocol/graph-ts";
+import { BigDecimal, ethereum, Bytes, Address } from "@graphprotocol/graph-ts";
 
-import { Approval, ERC20, Transfer } from "../generated/ERC20/ERC20";
 import {
-  Account,
-  Token,
-  TokenApproval,
-  TokenBalance,
-} from "../generated/schema";
+  ERC20,
+  Transfer,
+} from "../generated/ERC20_0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9/ERC20";
+import { Token, TokenTransfer, User } from "../generated/schema";
 
-const zeroAddress = '0x0000000000000000000000000000000000000000';
-
-function loadOrCreateAccount(address: string): Account | null {
-  let account = Account.load(address);
-  if (!account) {
-    account = new Account(address);
-    account.save();
-  }
-  return account;
-}
-
-function loadOrCreateToken(event: ethereum.Event): Token | null {
-  let token = Token.load(event.address.toHex());
+export function loadOrCreateToken(address: Address): Token | null {
+  let token = Token.load(address.toHex());
   if (!token) {
-    let erc20 = ERC20.bind(event.address);
+    let erc20 = ERC20.bind(address);
 
     let nameResult = erc20.try_name();
     if (nameResult.reverted) {
@@ -39,14 +26,7 @@ function loadOrCreateToken(event: ethereum.Event): Token | null {
       return null;
     }
 
-    // Ignore any weird tokens to avoid overflowing the `decimals` field (which is an i32)
-    // On mainnet for example there is at least one token which has a huge value for `decimals`
-    // and that would overflow the Token entity's i32 field for the decimals
-    if (decimalsResult.value.toBigDecimal().gt(BigDecimal.fromString("255"))) {
-      return null;
-    }
-
-    token = new Token(event.address.toHex());
+    token = new Token(address.toHex());
     token.name = nameResult.value;
     token.symbol = symbolResult.value;
     token.decimals = decimalsResult.value.toI32();
@@ -55,74 +35,32 @@ function loadOrCreateToken(event: ethereum.Event): Token | null {
   return token;
 }
 
-export function handleApproval(event: Approval): void {
-  let token = loadOrCreateToken(event);
-  if (!token) {
-    return;
-  }
-
-  let owner = event.params.owner.toHex();
-  let spender = event.params.spender.toHex();
-  let value = event.params.value.toBigDecimal();
-
-  let ownerAccount = loadOrCreateAccount(owner);
-  let spenderAccount = loadOrCreateAccount(spender);
-
-  if (!ownerAccount || !spenderAccount) {
-    return;
-  }
-
-  let tokenApproval = TokenApproval.load(
-    token.id + "-" + ownerAccount.id + "-" + spenderAccount.id
-  );
-  if (!tokenApproval) {
-    tokenApproval = new TokenApproval(
-      token.id + "-" + ownerAccount.id + "-" + spenderAccount.id
-    );
-    tokenApproval.token = token.id;
-    tokenApproval.ownerAccount = ownerAccount.id;
-    tokenApproval.spenderAccount = spenderAccount.id;
-  }
-  tokenApproval.value = value;
-  tokenApproval.save();
-}
-
 export function handleTransfer(event: Transfer): void {
-  let token = loadOrCreateToken(event);
+  let token = loadOrCreateToken(event.address);
   if (!token) {
     return;
   }
 
-  let from = event.params.from.toHex();
-  let to = event.params.to.toHex();
+  let from = event.params.from;
+  let to = event.params.to;
   let value = event.params.value.toBigDecimal();
 
-  let fromAccount = loadOrCreateAccount(from);
-  let toAccount = loadOrCreateAccount(to);
+  let userFrom = User.load(from.toHex());
+  let userTo = User.load(to.toHex());
 
-  if (!fromAccount || !toAccount) {
+  if (userFrom == null && userTo == null) {
     return;
   }
 
-  if (fromAccount.id != zeroAddress) {
-    let fromTokenBalance = TokenBalance.load(token.id + "-" + fromAccount.id);
-    if (!fromTokenBalance) {
-      fromTokenBalance = new TokenBalance(token.id + "-" + fromAccount.id);
-      fromTokenBalance.token = token.id;
-      fromTokenBalance.account = fromAccount.id;
-      fromTokenBalance.value = BigDecimal.fromString("0");
-    }
-    fromTokenBalance.value = fromTokenBalance.value.minus(value);
-    fromTokenBalance.save();
-  }
-
-  let toTokenBalance = TokenBalance.load(token.id + "-" + toAccount.id);
-  if (!toTokenBalance) {
-    toTokenBalance = new TokenBalance(token.id + "-" + toAccount.id);
-    toTokenBalance.token = token.id;
-    toTokenBalance.account = toAccount.id;
-    toTokenBalance.value = BigDecimal.fromString("0");
-  }
-  toTokenBalance.value = toTokenBalance.value.plus(value);
-  toTokenBalance.save();
+  let transfer = new TokenTransfer(
+    event.transaction.hash.toHex() + event.logIndex.toString()
+  );
+  transfer.token = token.id;
+  transfer.txHash = event.transaction.hash;
+  transfer.blockNumber = event.block.number.toI32();
+  transfer.timestamp = event.block.timestamp.toI32();
+  transfer.to = to;
+  transfer.from = from;
+  transfer.amount = value;
+  transfer.save();
 }

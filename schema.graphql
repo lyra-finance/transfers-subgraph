@@ -3,28 +3,24 @@ type Token @entity {
   name: String!
   symbol: String!
   decimals: Int!
-  balances: [TokenBalance!]! @derivedFrom(field: "token")
-  approvals: [TokenApproval!]! @derivedFrom(field: "token")
+  transfers: [TokenTransfer!]! @derivedFrom(field: "token")
 }
 
-type Account @entity {
-  id: ID!
-  balances: [TokenBalance!]! @derivedFrom(field: "account")
-  incomingApprovals: [TokenApproval!]! @derivedFrom(field: "spenderAccount")
-  outgoingApprovals: [TokenApproval!]! @derivedFrom(field: "ownerAccount")
-}
-
-type TokenBalance @entity {
+type TokenTransfer @entity {
   id: ID!
   token: Token!
-  account: Account!
-  value: BigDecimal!
+  txHash: Bytes!
+  blockNumber: Int!
+  timestamp: Int!
+  to: Bytes!
+  from: Bytes!
+  amount: BigDecimal!
 }
 
-type TokenApproval @entity {
+type User @entity{
   id: ID!
-  token: Token!
-  ownerAccount: Account!
-  spenderAccount: Account!
-  value: BigDecimal!
+}
+
+type LiquidityPool @entity{
+  id: ID!
 }
