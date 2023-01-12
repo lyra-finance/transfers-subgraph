@@ -1,23 +1,47 @@
 const path = require("path");
 
-const registryDeployBlock = 12780680;
+const getNetwork = (networkForPath) => {
+  switch (networkForPath) {
+    case "local-ovm":
+    case "local":
+    case "kovan-ovm":
+      return "optimism-kovan";
+    case "goerli-ovm":
+      return "optimism-goerli";
+    case "goerli-arbi":
+      return "arbitrum-goerli";
+    case "mainnet-ovm":
+      return "optimism";
+    case "mainnet-arbi":
+      return "arbitrum-one";
+    default:
+      throw Error("invalid network type");
+  }
+};
 
-const registryAddress = "0xF5A0442D4753cA1Ea36427ec071aa5E786dA5916";
-const network = "arbitrum";
+const networkIndex = process.argv.findIndex((arg) => arg.includes("--network"));
+const networkForPath = process.argv[networkIndex + 1];
 
-const tokens =
-  network == "optimism"
-    ? [
-        "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9", //SUSD
-        "0x7f5c764cbc14f9669b88837ca1490cca17c31607", //USDC
-        "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1", //DAI
-        "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58", //USDT
-      ]
-    : [
-        "0x7f5c764cbc14f9669b88837ca1490cca17c31607", //USDC
-        "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1", //ETH
-        "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58", //DAI
-      ];
+const network = getNetwork(networkForPath);
+
+let registryDeployBlock = 12780680;
+let registryAddress = "0xF5A0442D4753cA1Ea36427ec071aa5E786dA5916";
+let tokens = [
+  "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9", //SUSD
+  "0x7f5c764cbc14f9669b88837ca1490cca17c31607", //USDC
+  "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1", //DAI
+  "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58", //USDT
+];
+
+if (network == "arbitrum-one") {
+  registryDeployBlock = 43397270;
+  registryAddress = "0x62a5a1592Df5A0CFBc2a595836a1AfaD27803F07";
+  tokens = [
+    "0x7f5c764cbc14f9669b88837ca1490cca17c31607", //USDC
+    "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1", //ETH
+    "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58", //DAI
+  ];
+}
 
 const staticTokens = tokens.map((token) => {
   return {

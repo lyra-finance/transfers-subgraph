@@ -4,15 +4,16 @@
   "description": "Subgraph for indexing all ERC20 token balances and approvals",
   "scripts": {
     "codegen": "graph codegen",
-    "build": "graph build",
-    "deploy": "graph deploy georgeroman/erc20-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
+    "build": "env-cmd -f .env.local ./build.sh",
+    "deploy-satsuma": "env-cmd -f .env.local ./deploy-satsuma.sh"
   },
   "author": "George Roman",
   "license": "MIT",
   "dependencies": {
     "@graphprotocol/graph-cli": "^0.26.0",
     "@graphprotocol/graph-ts": "^0.26.0"
-  },"devDependencies": {
+  },
+  "devDependencies": {
     "@graphql-codegen/typescript": "^2.4.7",
     "@typechain/ethers-v5": "^9.0.0",
     "@types/fs-extra": "^9.0.11",
