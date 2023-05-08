@@ -133,11 +133,11 @@ const dataSources = [
       eventHandlers: [
         {
           event: "ClaimAdded(indexed address,indexed address,uint256,uint256,indexed uint256,string)",
-          handler: "handleClaimAdded",
+          handler: "handleClaimAdded2",
         },
         {
           event: "Claimed(indexed address,indexed address,uint256,uint256)",
-          handler: "handleClaim",
+          handler: "handleClaim2",
         },
       ],
     },

@@ -2,13 +2,13 @@ import {
   ClaimAdded as ClaimAddedEvent,
   Claimed as ClaimEvent,
 } from "../generated/MultiDistributor2/MultiDistributor2";
-import { ClaimAdded, User, Claim, ClaimRemoved } from "../generated/schema";
-import { BigInt, BigDecimal } from "@graphprotocol/graph-ts";
+import { ClaimAdded as ClaimAdded2, User as User2, Claim as Claim2 } from "../generated/schema";
+import { BigDecimal } from "@graphprotocol/graph-ts";
 
 const ZERO = BigDecimal.zero();
 
-export function handleClaimAdded(event: ClaimAddedEvent): void {
-  let user = User.load(
+export function handleClaimAdded2(event: ClaimAddedEvent): void {
+  let user = User2.load(
     event.params.claimer.toHex() + "-" + event.params.rewardToken.toHex()
   );
 
@@ -23,7 +23,7 @@ export function handleClaimAdded(event: ClaimAddedEvent): void {
 
   let claimer = event.params.claimer;
   let batchId = event.params.batchId;
-  let claimAdded = new ClaimAdded(
+  let claimAdded = new ClaimAdded2(
     event.transaction.hash.toHex() + event.logIndex.toString()
   );
   claimAdded.txHash = event.transaction.hash;
@@ -38,8 +38,8 @@ export function handleClaimAdded(event: ClaimAddedEvent): void {
   claimAdded.save();
 }
 
-export function handleClaim(event: ClaimEvent): void {
-  let user = User.load(
+export function handleClaim2(event: ClaimEvent): void {
+  let user = User2.load(
     event.params.claimer.toHex() + "-" + event.params.rewardToken.toHex()
   );
 
@@ -54,7 +54,7 @@ export function handleClaim(event: ClaimEvent): void {
   user.totalClaimed = user.totalClaimed.plus(value);
   user.save();
 
-  let claim = new Claim(
+  let claim = new Claim2(
     event.transaction.hash.toHex() + event.logIndex.toString()
   );
   claim.txHash = event.transaction.hash;
@@ -67,8 +67,8 @@ export function handleClaim(event: ClaimEvent): void {
   claim.save();
 }
 
-export function createUser(event: ClaimAddedEvent): User {
-  let user = new User(
+export function createUser(event: ClaimAddedEvent): User2 {
+  let user = new User2(
     event.params.claimer.toHex() + "-" + event.params.rewardToken.toHex()
   );
   user.address = event.params.claimer;
