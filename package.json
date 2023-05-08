@@ -10,8 +10,8 @@
   "author": "George Roman",
   "license": "MIT",
   "dependencies": {
-    "@graphprotocol/graph-cli": "^0.26.0",
-    "@graphprotocol/graph-ts": "^0.26.0"
+    "@graphprotocol/graph-cli": "^0.48.0",
+    "@graphprotocol/graph-ts": "^0.29.3"
   },
   "devDependencies": {
     "@graphql-codegen/typescript": "^2.4.7",

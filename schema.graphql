@@ -47,3 +47,36 @@ type User @entity {
   totalAdded: BigDecimal!
   totalClaimed: BigDecimal!
 }
+
+type ClaimAdded2 @entity {
+  id: ID!
+  txHash: Bytes!
+  blockNumber: Int!
+  timestamp: Int!
+  epochTimestamp: BigInt!
+  claimer: Bytes!
+  rewardToken: Bytes!
+  tag: String!
+  amount: BigDecimal!
+  batchId: Int!
+}
+
+
+type Claim2 @entity {
+  id: ID!
+  txHash: Bytes!
+  blockNumber: Int!
+  timestamp: Int!
+  claimer: Bytes!
+  batchId: Int!
+  rewardToken: Bytes!
+  amount: BigDecimal!
+}
+
+type User2 @entity {
+  id: ID!
+  address: Bytes!
+  rewardToken: Bytes!
+  totalAdded: BigDecimal!
+  totalClaimed: BigDecimal!
+}
