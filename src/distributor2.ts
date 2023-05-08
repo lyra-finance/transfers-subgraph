@@ -22,7 +22,7 @@ export function handleClaimAdded(event: ClaimAddedEvent): void {
   user.save();
 
   let claimer = event.params.claimer;
-
+  let batchId = event.params.batchId;
   let claimAdded = new ClaimAdded(
     event.transaction.hash.toHex() + event.logIndex.toString()
   );
@@ -33,6 +33,7 @@ export function handleClaimAdded(event: ClaimAddedEvent): void {
   claimAdded.timestamp = event.block.timestamp.toI32();
   claimAdded.claimer = claimer;
   claimAdded.amount = value;
+  claimAdded.batchId = batchId;
   claimAdded.epochTimestamp = event.params.epochTimestamp
   claimAdded.save();
 }
@@ -47,6 +48,7 @@ export function handleClaim(event: ClaimEvent): void {
   }
 
   let claimer = event.params.claimer;
+  let batchId = event.params.batchId;
   let value = event.params.amount.toBigDecimal();
 
   user.totalClaimed = user.totalClaimed.plus(value);
@@ -61,6 +63,7 @@ export function handleClaim(event: ClaimEvent): void {
   claim.timestamp = event.block.timestamp.toI32();
   claim.claimer = claimer;
   claim.amount = value;
+  claim.batchId = batchId;
   claim.save();
 }
 
