@@ -58,7 +58,7 @@ type ClaimAdded2 @entity {
   rewardToken: Bytes!
   tag: String!
   amount: BigDecimal!
-  batchId: Int!
+  batchId: BigInt!
 }
 
 
@@ -68,7 +68,7 @@ type Claim2 @entity {
   blockNumber: Int!
   timestamp: Int!
   claimer: Bytes!
-  batchId: Int!
+  batchId: BigInt!
   rewardToken: Bytes!
   amount: BigDecimal!
 }

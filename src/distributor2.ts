@@ -2,7 +2,7 @@ import {
   ClaimAdded as ClaimAddedEvent,
   Claimed as ClaimEvent,
 } from "../generated/MultiDistributor2/MultiDistributor2";
-import { ClaimAdded as ClaimAdded2, User as User2, Claim as Claim2 } from "../generated/schema";
+import { ClaimAdded2, User2, Claim2 } from "../generated/schema";
 import { BigDecimal } from "@graphprotocol/graph-ts";
 
 const ZERO = BigDecimal.zero();

@@ -122,7 +122,7 @@ const dataSources = [
       kind: "ethereum/events",
       apiVersion: "0.0.5",
       language: "wasm/assemblyscript",
-      file: "./src/distributor.ts",
+      file: "./src/distributor2.ts",
       entities: ["TokenTransfer"], //This value is currently not used by TheGraph at all, it just cant be empty
       abis: [
         {
@@ -132,11 +132,11 @@ const dataSources = [
       ],
       eventHandlers: [
         {
-          event: "ClaimAdded(indexed address,indexed address,uint256,uint256,indexed uint256,string)",
+          event: "ClaimAdded(address,indexed address,uint256,indexed uint256,indexed uint256,string)",
           handler: "handleClaimAdded2",
         },
         {
-          event: "Claimed(indexed address,indexed address,uint256,uint256)",
+          event: "Claimed(indexed address,indexed address,indexed uint256,uint256)",
           handler: "handleClaim2",
         },
       ],
